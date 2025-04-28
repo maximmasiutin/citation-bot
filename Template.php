@@ -5151,6 +5151,13 @@ final class Template
   return in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true);
  }
 
+ /**
+  * Cleans, normalizes, and corrects a single citation template parameter.
+  *
+  * Applies context-sensitive rules to remove formatting artifacts, standardize values, correct common mistakes, and resolve inconsistencies for the specified parameter. Handles special cases for identifiers, author fields, publishers, URLs, dates, and other citation-specific fields. May rename, remove, or update parameters based on their content and relationship to other parameters.
+  *
+  * @param string $param The name of the parameter to tidy.
+  */
  public function tidy_parameter(string $param): void
  {
   set_time_limit(120);
