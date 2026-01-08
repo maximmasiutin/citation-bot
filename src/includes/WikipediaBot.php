@@ -171,8 +171,8 @@ final class WikipediaBot {
             return self::ret_okay($ret) ? $ret : null;
             // @codeCoverageIgnoreStart
         } catch (Exception $E) {
-            report_warning("Exception caught!\n");
-            report_info("Response: " . echoable($E->getMessage()));
+            bot_debug_log("WikipediaBot fetch exception: " . $E->getMessage());
+            report_warning("Exception caught during Wikipedia API request");
         }
         return null;
         // @codeCoverageIgnoreEnd
@@ -423,8 +423,8 @@ final class WikipediaBot {
             return self::ret_okay(@json_decode($data)) ? $data : '';
             // @codeCoverageIgnoreStart
         } catch (Exception $E) {
-            report_warning("Exception caught!!\n");
-            report_info("Response: " . echoable($E->getMessage()));
+            bot_debug_log("WikipediaBot QueryAPI exception: " . $E->getMessage());
+            report_warning("Exception caught during Wikipedia API query");
         }
         return '';
         // @codeCoverageIgnoreEnd
@@ -553,7 +553,7 @@ final class WikipediaBot {
             $return = $_SERVER['REQUEST_URI'];
             unset($_SERVER['REQUEST_URI']);
             session_write_close();
-            if (mb_substr($return, 0, 1) !== '/' || preg_match('~\s+~', $return)) { // Security paranoia
+            if (mb_substr($return, 0, 1) !== '/' || mb_substr($return, 0, 2) === '//' || preg_match('~\s+~', $return)) { // Security paranoia
                 report_error('Invalid URL passes to internal API');
             }
             /** @psalm-taint-escape header */

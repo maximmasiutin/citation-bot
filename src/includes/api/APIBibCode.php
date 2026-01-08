@@ -444,7 +444,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
                 }
             } else {
                 bot_debug_log("No match for bibcode identifier: " . $bad_boy);
-                report_warning("No match for bibcode identifier: " . $bad_boy);
+                report_warning("No match for bibcode identifier: " . echoable($bad_boy));
             }
         }
 
@@ -597,16 +597,17 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         }
         // @codeCoverageIgnoreStart
     } catch (Exception $e) {
+        bot_debug_log("query_adsabs exception: " . $e->getMessage());
         if ($e->getCode() === 5000) { // made up code for AdsAbs error
-            report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
+            report_warning("API Error in query_adsabs: AdsAbs returned an error response");
         } elseif ($e->getCode() === 60) {
             AdsAbsControl::big_give_up();
             AdsAbsControl::small_give_up();
             report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
         } elseif (mb_strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== false) {
-            report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
+            report_info("Internal Error in query_adsabs: Search syntax error");
         } elseif (mb_strpos($e->getMessage(), 'HTTP') === 0) {
-            report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
+            report_warning("HTTP Error in query_adsabs");
         } elseif (mb_strpos($e->getMessage(), 'Too many requests') !== false) {
             report_warning('Giving up on AdsAbs for a while.  Too many requests.');
             if (mb_strpos($adsabs_url, 'bigquery') !== false) {
@@ -615,7 +616,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
                 AdsAbsControl::small_give_up();
             }
         } else {
-            report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
+            report_warning("Error in query_adsabs: An unexpected error occurred");
         }
     }
     return (object) ['numFound' => 0];

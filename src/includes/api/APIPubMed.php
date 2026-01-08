@@ -189,7 +189,7 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
         CURLOPT_POSTFIELDS => $post,
     ]);
     $output = bot_curl_exec($ch);
-    $xml = @simplexml_load_string($output);
+    $xml = @simplexml_load_string($output, SimpleXMLElement::class, LIBXML_NONET);
     if ($xml === false) {
         sleep(1);
         return null;

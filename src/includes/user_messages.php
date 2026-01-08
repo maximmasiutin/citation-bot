@@ -107,7 +107,8 @@ function echoable(?string $string): string {
      * @psalm-taint-escape has_quotes
      */
     $string = (string) $string;
-     return HTML_OUTPUT ? htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $string;
+    // Always sanitize to prevent XSS in all output modes
+    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
 }
 
 function pubmed_link(string $identifier, string $pm): string {

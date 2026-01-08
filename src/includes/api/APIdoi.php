@@ -230,7 +230,7 @@ function query_crossref(string $doi): ?object {
             '~(\<year media_type=\"online\"\>\d{4}\<\/year\>\<year media_type=\"print\"\>)~',
                     '<year media_type="print">',
                     $raw_xml);
-        $xml = @simplexml_load_string($raw_xml);
+        $xml = @simplexml_load_string($raw_xml, SimpleXMLElement::class, LIBXML_NONET);
         unset($raw_xml);
         if (is_object($xml) && isset($xml->query_result->body->query)) {
             $result = $xml->query_result->body->query;
@@ -578,7 +578,7 @@ function get_doi_from_crossref(Template $template): void {
         curl_setopt($ch, CURLOPT_URL, $url);
         $xml = bot_curl_exec($ch);
         if (mb_strlen($xml) > 0) {
-            $result = @simplexml_load_string($xml);
+            $result = @simplexml_load_string($xml, SimpleXMLElement::class, LIBXML_NONET);
             unset($xml);
         } else {
             $result = false;
