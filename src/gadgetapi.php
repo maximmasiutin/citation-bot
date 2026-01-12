@@ -5,8 +5,19 @@ declare(strict_types=1);
 // https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js
 set_time_limit(120);
 
+// Validate origin for CORS - allow Wikipedia/Wikimedia domains and toolforge
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowed_origin = '';
+if (preg_match('~^https://[a-z\-]+\.(wikipedia|wikimedia|wikibooks|wikisource|wikinews|wikiquote|wiktionary|wikiversity|wikivoyage|wikidata|mediawiki)\.org$~', $origin)) {
+    $allowed_origin = $origin;
+} elseif (preg_match('~^https://[a-z\-]+\.toolforge\.org$~', $origin)) {
+    $allowed_origin = $origin;
+}
+
 try {
-    @header('Access-Control-Allow-Origin: *'); // Needed for gadget to work right
+    if ($allowed_origin !== '') {
+        @header('Access-Control-Allow-Origin: ' . $allowed_origin);
+    }
     @header('Content-Type: text/json');
 
     //Set up tool requirements

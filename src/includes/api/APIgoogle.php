@@ -209,7 +209,7 @@ function google_book_details(Template $template, string $gid): void {
         return;
     }
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom', str_replace(":", "___", $data));
-    $xml = @simplexml_load_string($simplified_xml);
+    $xml = @simplexml_load_string($simplified_xml, SimpleXMLElement::class, LIBXML_NONET);
     if ($xml === false) {
         return;
     }

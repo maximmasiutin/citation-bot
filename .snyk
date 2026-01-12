@@ -1,0 +1,41 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-PHP-SIMPLEXML-XXE:
+    - '*':
+        reason: >-
+          Project requires PHP 8.2+ (see CLAUDE.md and composer.json). PHP 8.0+
+          disables external entity loading by default in libxml2. Additionally,
+          LIBXML_NONET flag is used to disable network access. These findings
+          are marked as "Pre-PHP 8" by Snyk itself.
+        expires: 2027-01-08T00:00:00.000Z
+  565116bf-4829-4819-aaca-fe98f5ba3d84:
+    - '*':
+        reason: >-
+          Project requires PHP 8.2+ where external entities are disabled by
+          default
+        expires: 2026-02-07T21:34:28.313Z
+        created: 2026-01-08T21:34:28.316Z
+  b08940ad-e61c-4867-b544-7023b6a29d72:
+    - '*':
+        reason: >-
+          Project requires PHP 8.2+ where external entities are disabled by
+          default
+        expires: 2026-02-07T21:34:37.981Z
+        created: 2026-01-08T21:34:37.984Z
+  8045f3ba-8bbe-4de9-abbb-0080df764269:
+    - '*':
+        reason: >-
+          Project requires PHP 8.2+ where external entities are disabled by
+          default
+        expires: 2026-02-07T21:34:46.021Z
+        created: 2026-01-08T21:34:46.025Z
+  75d78668-d12d-4191-a08f-b88a37000e1b:
+    - '*':
+        reason: >-
+          Comprehensive URL validation with whitelist and fallback to safe
+          default
+        expires: 2026-02-07T21:34:54.569Z
+        created: 2026-01-08T21:34:54.573Z
+patch: {}

@@ -16,10 +16,26 @@ function death_time(string $err): never {
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/'): never {
-    if (preg_match('~\s+~', $where)) {
-        death_time('Error in return_to_sender');
+    // Default safe URL
+    $safe_url = 'https://citations.toolforge.org/';
+
+    // Validate URL to prevent open redirect
+    if (!preg_match('~\s+~', $where)) {
+        // Only allow relative paths starting with / (but not //) or specific trusted domains
+        if (mb_substr($where, 0, 1) === '/' && mb_substr($where, 0, 2) !== '//') {
+            // Relative path - reconstruct to ensure safety
+            $safe_url = '/' . ltrim(preg_replace('~[^a-zA-Z0-9\-_\.\/\?\=\&\%]~', '', $where), '/');
+        } elseif (mb_strpos($where, 'https://citations.toolforge.org/') === 0) {
+            $safe_url = 'https://citations.toolforge.org/';
+        } elseif (mb_strpos($where, 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth') === 0) {
+            // OAuth URL - validate and reconstruct
+            if (preg_match('~^https://meta\.wikimedia\.org/w/index\.php\?title=Special:OAuth(?:/authorize)?&oauth_token=[a-zA-Z0-9]+$~', $where)) {
+                $safe_url = $where;
+            }
+        }
     }
-    header("Location: " . $where);
+
+    header("Location: " . $safe_url);
     exit;
 }
 
@@ -83,7 +99,7 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
             // This could only be tainted input if OAuth server itself was hacked, so flag as safe
             /** @psalm-taint-escape header */
             $where = mb_trim($_GET['return']);
-            if (mb_substr($where, 0, 1) !== '/' || preg_match('~\s+~', $where)) {
+            if (mb_substr($where, 0, 1) !== '/' || mb_substr($where, 0, 2) === '//' || preg_match('~\s+~', $where)) {
                 death_time('Invalid Access URL');
             }
             return_to_sender($where);
