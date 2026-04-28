@@ -1904,4 +1904,17 @@ EP - 999 }}';
         $this->assertNotEmpty($expanded->get2('journal'),
             'Journal name should be added from published article metadata');
     }
+
+    public function testVancSuffixInVauthors(): void {
+        // Regression: ordinal and Jr suffixes must be preserved in Vancouver output.
+        foreach ([['Jacob', 'P 3rd', 'Jacob P 3rd'], ['Smith', 'P Jr', 'Smith P Jr']] as [$last, $first, $expected]) {
+            $text = "{{cite journal |title=Test Title |last1={$last} |first1={$first} }}";
+            Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
+            $template = $this->make_citation($text);
+            $template->initial_author_params_set([]);
+            $result = $template->parsed_text();
+            Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+            $this->assertStringContainsString($expected, $result);
+        }
+    }
 }
